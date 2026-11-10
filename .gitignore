@@ -1,0 +1,11 @@
+node_modules
+dist
+dev-dist
+*.local
+datos-privados/
+.DS_Store
+*.pdf
+*.xlsx
+*.tsbuildinfo
+*.traineddata
+.vitest/

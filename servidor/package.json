@@ -1,0 +1,17 @@
+{
+  "name": "mis-finanzas-servidor",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "API de Mis Finanzas: entrar con usuario y contraseña, y sincronizar los datos entre dispositivos",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/index.js",
+    "crear-usuario": "node src/crear-usuario.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.0",
+    "hono": "^4.7.0",
+    "postgres": "^3.4.5"
+  }
+}

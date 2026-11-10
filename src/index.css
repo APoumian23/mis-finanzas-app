@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+/* dark: sigue al tema elegido en la app, no solo al del teléfono */
+@custom-variant dark {
+  &:where([data-tema="oscuro"], [data-tema="oscuro"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where([data-tema="auto"], [data-tema="auto"] *) {
+      @slot;
+    }
+  }
+}
+
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --color-fondo: var(--fondo);
+  --color-superficie: var(--superficie);
+  --color-hundido: var(--hundido);
+  --color-tinta: var(--tinta);
+  --color-suave: var(--suave);
+  --color-linea: var(--linea);
+  --color-acento: var(--acento);
+  --color-acento-suave: var(--acento-suave);
+  --color-alerta: var(--alerta);
+  --color-alerta-suave: var(--alerta-suave);
+  --color-aviso: var(--aviso);
+  --color-aviso-suave: var(--aviso-suave);
+  --color-bien: var(--bien);
+}
+
+:root {
+  --fondo: #f4f5f2;
+  --superficie: #ffffff;
+  --hundido: #eceee9;
+  --tinta: #191c1a;
+  --suave: #5f6661;
+  --linea: #dfe2dc;
+  --acento: #0f766e;
+  --acento-suave: #d7efec;
+  --alerta: #b42318;
+  --alerta-suave: #fbe7e4;
+  --aviso: #a15c07;
+  --aviso-suave: #fcf0d9;
+  --bien: #15803d;
+  --serie-1: #2a78d6;
+  --serie-2: #eb6834;
+  --serie-3: #1baf7a;
+  --serie-4: #eda100;
+  --serie-5: #e87ba4;
+  --serie-6: #008300;
+  --serie-7: #6250d6;
+  --serie-8: #e34948;
+  --otros: #8a8f8b;
+  color-scheme: light;
+}
+
+/* Tema: claro por defecto; oscuro si lo eliges, o "automático" para seguir al teléfono (data-tema en <html>) */
+:root[data-tema="oscuro"] {
+  --fondo: #101211;
+  --superficie: #1a1d1b;
+  --hundido: #232724;
+  --tinta: #eef0ec;
+  --suave: #9aa29c;
+  --linea: #2d322e;
+  --acento: #2dd4bf;
+  --acento-suave: #15312e;
+  --alerta: #f87171;
+  --alerta-suave: #3a1c1a;
+  --aviso: #fbbf24;
+  --aviso-suave: #362a12;
+  --bien: #4ade80;
+  --serie-1: #3987e5;
+  --serie-2: #d95926;
+  --serie-3: #199e70;
+  --serie-4: #c98500;
+  --serie-5: #d55181;
+  --serie-6: #008300;
+  --serie-7: #9085e9;
+  --serie-8: #e66767;
+  --otros: #6b716c;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-tema="auto"] {
+    --fondo: #101211;
+    --superficie: #1a1d1b;
+    --hundido: #232724;
+    --tinta: #eef0ec;
+    --suave: #9aa29c;
+    --linea: #2d322e;
+    --acento: #2dd4bf;
+    --acento-suave: #15312e;
+    --alerta: #f87171;
+    --alerta-suave: #3a1c1a;
+    --aviso: #fbbf24;
+    --aviso-suave: #362a12;
+    --bien: #4ade80;
+    --serie-1: #3987e5;
+    --serie-2: #d95926;
+    --serie-3: #199e70;
+    --serie-4: #c98500;
+    --serie-5: #d55181;
+    --serie-6: #008300;
+    --serie-7: #9085e9;
+    --serie-8: #e66767;
+    --otros: #6b716c;
+    color-scheme: dark;
+  }
+}
+
+/* En celular todo un poco más grande (letra, botones y espacios): se lee a un brazo de distancia y con sol */
+@media (max-width: 767px) {
+  html {
+    font-size: 106.25%; /* 17px */
+  }
+}
+
+html, body, #root {
+  min-height: 100%;
+  background: var(--fondo);
+  color: var(--tinta);
+}
+
+/* Sin zoom al dar doble toque en celular o tablet (el pellizco para acercar sigue funcionando) */
+html {
+  touch-action: manipulation;
+}
+
+body {
+  overflow-x: clip; /* ninguna pantalla se mueve de lado aunque algo se pase de ancho */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+.cifras {
+  font-variant-numeric: tabular-nums;
+}
+
+.pb-seguro {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+}
+
+.pt-seguro {
+  padding-top: max(env(safe-area-inset-top), 0.75rem);
+}
+
+@layer base {
+  input, select, textarea, button {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* iOS hace zoom si el texto del campo es menor a 16px */
+  input, select, textarea {
+    font-size: 16px;
+  }
+
+  /* En el iPhone el campo de fecha tiene un ancho mínimo propio y se sale de su columna (la pantalla se movía de lado) */
+  input[type="date"] {
+    min-width: 0;
+    max-width: 100%;
+    display: block;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+  }
+}
+
+/* Al tocar una gráfica no debe quedar el recuadro de foco del navegador */
+.recharts-wrapper:focus,
+.recharts-wrapper *:focus,
+.recharts-surface:focus {
+  outline: none;
+}

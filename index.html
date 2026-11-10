@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f5f2" />
+    <script>
+      // El tema se pone antes de pintar para que no parpadee (claro por defecto)
+      try { document.documentElement.dataset.tema = localStorage.getItem("tema") || "claro"; } catch { document.documentElement.dataset.tema = "claro"; }
+    </script>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Finanzas" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/icono.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>Mis Finanzas</title>
+  </head>
+  <body>
+    <!-- Mientras baja la app se ve esto (React lo reemplaza al arrancar); así nunca queda en blanco -->
+    <div id="root">
+      <div id="cargando" style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center;font-family:-apple-system,system-ui,sans-serif;background:var(--fondo,#f4f5f2);color:var(--tinta,#191c1a)">
+        <div style="width:64px;height:64px;border-radius:16px;background:#0f766e;color:#fff;font-size:34px;font-weight:700;display:flex;align-items:center;justify-content:center">$</div>
+        <p id="cargando-texto" style="margin:0;font-size:17px">Cargando Mis Finanzas…</p>
+        <button id="cargando-reintentar" hidden style="min-height:48px;padding:0 24px;border:0;border-radius:12px;background:#0f766e;color:#fff;font-size:16px;font-weight:600">Volver a cargar</button>
+      </div>
+    </div>
+    <script>
+      // Si la app tarda mucho o un archivo no baja, se dice y se ofrece volver a cargar.
+      // "Volver a cargar" borra solo la app guardada (service worker y su caché); tus datos no se tocan.
+      (function () {
+        var tema = document.documentElement.dataset.tema;
+        if (tema === "oscuro" || (tema === "auto" && matchMedia("(prefers-color-scheme: dark)").matches)) {
+          var c = document.getElementById("cargando");
+          c.style.background = "#101211"; c.style.color = "#eef0ec";
+        }
+        function avisar(texto) {
+          var t = document.getElementById("cargando-texto"), b = document.getElementById("cargando-reintentar");
+          if (!t) return; // la app ya arrancó
+          t.textContent = texto; b.hidden = false;
+        }
+        document.getElementById("cargando-reintentar").onclick = function () {
+          var listo = [];
+          if (navigator.serviceWorker) listo.push(navigator.serviceWorker.getRegistrations().then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister(); })); }));
+          if (window.caches) listo.push(caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); }));
+          Promise.all(listo).catch(function () {}).then(function () { location.reload(); });
+        };
+        setTimeout(function () { avisar("Está tardando: tu internet va lento. Puedes esperar o volver a cargar."); }, 15000);
+        addEventListener("error", function (e) {
+          var el = e.target;
+          if (el && (el.tagName === "SCRIPT" || el.tagName === "LINK")) avisar("No se pudo bajar la app. Revisa tu internet y vuelve a cargar.");
+          else avisar("La app no pudo arrancar. Vuelve a cargar; tus datos siguen guardados.");
+        }, true);
+      })();
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
